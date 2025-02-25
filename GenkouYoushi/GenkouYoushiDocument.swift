@@ -21,11 +21,6 @@ struct GenkouYoushiDocument: FileDocument {
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
         return .init(regularFileWithContents: pdfData)
     }
-    
-    // Add this method to update the PDF data
-    mutating func updatePDFData(_ newData: Data) {
-        self.pdfData = newData
-    }
 }
 
 extension GenkouYoushiDocument {

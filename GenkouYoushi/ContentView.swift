@@ -12,7 +12,9 @@ struct ContentView: View {
     @State private var annotations: [PDFAnnotation] = []
     
     var body: some View {
-        PDFKitAnnotationView(document: PDFDocument(data: document.pdfData)!, canAnnotate: $canAnnotate, annotations: $annotations)
+        PDFKitAnnotationView(document: PDFDocument(data: document.pdfData)!,
+                             canAnnotate: $canAnnotate,
+                             annotations: $annotations)
             .edgesIgnoringSafeArea(.all)
     }
 }
@@ -181,35 +183,7 @@ struct PDFKitAnnotationView: UIViewRepresentable {
         }
         
         // Save the drawn content as a PDF annotation
-        func saveAnnotation(from canvas: PKCanvasView) {
-            guard let page = currentPage, !canvas.drawing.strokes.isEmpty else { return }
-            
-            // Convert PKDrawing to a PDF annotation
-            let bounds = canvas.bounds
-            
-            // Create an image from the drawing
-            UIGraphicsBeginImageContextWithOptions(bounds.size, false, UIScreen.main.scale)
-            canvas.drawing.image(from: bounds, scale: UIScreen.main.scale).draw(in: bounds)
-            
-            if let image = UIGraphicsGetImageFromCurrentImageContext() {
-                UIGraphicsEndImageContext()
-                
-                // Create a stamp annotation
-                let annotation = PDFAnnotation(bounds: bounds, forType: .stamp, withProperties: nil)
-                
-                // Set the content as an image
-                let iconKey = PDFAnnotationKey(rawValue: "AAPL:IconForType")
-                annotation.setValue(image, forAnnotationKey: iconKey)
-                
-                // Add annotation to the page
-                page.addAnnotation(annotation)
-                
-                // Update the parent's annotations array
-                DispatchQueue.main.async {
-                    self.parent.annotations.append(annotation)
-                }
-            }
-        }
+        func saveAnnotation(from canvas: PKCanvasView) {}
         
         // PDFViewDelegate methods
         func pdfViewPageChanged(_ pdfView: PDFView) {
@@ -227,7 +201,16 @@ struct PDFKitAnnotationView: UIViewRepresentable {
         // PKCanvasViewDelegate method
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
             // This method is called when the user draws on the canvas
-            // You could implement real-time saving here if needed
+            // Optional: Add debouncing to avoid saving too frequently
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(saveCurrentDrawing), object: nil)
+            self.perform(#selector(saveCurrentDrawing), with: nil, afterDelay: 0.5)
+        }
+        
+        // Add this method to handle the debounced saving
+        @objc func saveCurrentDrawing() {
+            guard let canvas = annotationCanvas else { return }
+            // Save the current drawing to the page
+            saveAnnotation(from: canvas)
         }
     }
 }
