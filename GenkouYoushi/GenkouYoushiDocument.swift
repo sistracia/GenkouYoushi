@@ -1,32 +1,44 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-extension UTType {
-    static var exampleText: UTType {
-        UTType(importedAs: "com.example.plain-text")
-    }
-}
-
 struct GenkouYoushiDocument: FileDocument {
-    var text: String
-
-    init(text: String = "Hello, world!") {
-        self.text = text
+    var pdfData: Data
+    
+    init(pdfData: Data = Data()) {
+        self.pdfData = pdfData
     }
-
-    static var readableContentTypes: [UTType] { [.exampleText] }
-
+    
+    static var readableContentTypes: [UTType] { [.pdf] }
+    
     init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents,
-              let string = String(data: data, encoding: .utf8)
+        guard let data = configuration.file.regularFileContents
         else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        text = string
+        pdfData = data
     }
     
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        let data = text.data(using: .utf8)!
-        return .init(regularFileWithContents: data)
+        return .init(regularFileWithContents: pdfData)
+    }
+    
+    // Add this method to update the PDF data
+    mutating func updatePDFData(_ newData: Data) {
+        self.pdfData = newData
+    }
+}
+
+extension GenkouYoushiDocument {
+    init() {
+        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792)) // US Letter size
+        let data = renderer.pdfData { context in
+            context.beginPage()
+            let attributes = [
+                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 72)
+            ]
+            let text = "Hello, PDF!"
+            text.draw(at: CGPoint(x: 100, y: 100), withAttributes: attributes)
+        }
+        self.init(pdfData: data)
     }
 }

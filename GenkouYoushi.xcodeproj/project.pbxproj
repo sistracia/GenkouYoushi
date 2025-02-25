@@ -290,6 +290,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GenkouYoushi/Preview Content\"";
+				DEVELOPMENT_TEAM = L5KUNY2Y63;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GenkouYoushi/Info.plist;
@@ -326,6 +327,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"GenkouYoushi/Preview Content\"";
+				DEVELOPMENT_TEAM = L5KUNY2Y63;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GenkouYoushi/Info.plist;
