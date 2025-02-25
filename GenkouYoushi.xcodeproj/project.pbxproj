@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		EE812ECA2D6C696300A7D8CF /* GenkouYoushi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GenkouYoushi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Genkou Youshi.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE812EDD2D6C696400A7D8CF /* GenkouYoushiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GenkouYoushiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE812EE72D6C696400A7D8CF /* GenkouYoushiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GenkouYoushiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -98,7 +98,7 @@
 		EE812ECB2D6C696300A7D8CF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EE812ECA2D6C696300A7D8CF /* GenkouYoushi.app */,
+				EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */,
 				EE812EDD2D6C696400A7D8CF /* GenkouYoushiTests.xctest */,
 				EE812EE72D6C696400A7D8CF /* GenkouYoushiUITests.xctest */,
 			);
@@ -127,7 +127,7 @@
 			packageProductDependencies = (
 			);
 			productName = GenkouYoushi;
-			productReference = EE812ECA2D6C696300A7D8CF /* GenkouYoushi.app */;
+			productReference = EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */;
 			productType = "com.apple.product-type.application";
 		};
 		EE812EDC2D6C696400A7D8CF /* GenkouYoushiTests */ = {
@@ -308,7 +308,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushi;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Genkou Youshi";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -345,7 +345,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushi;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Genkou Youshi";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
