@@ -12,35 +12,39 @@ struct ContentView: View {
     @State private var annotations: [PDFAnnotation] = []
     
     var body: some View {
-        PDFKitAnnotationView(document: PDFDocument(data: document.pdfData)!,
+        PDFKitAnnotationView(data: $document.pdfData,
                              canAnnotate: $canAnnotate,
                              annotations: $annotations)
-            .edgesIgnoringSafeArea(.all)
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
 // This is a UIViewRepresentable wrapper for PDFView with annotation capabilities
 struct PDFKitAnnotationView: UIViewRepresentable {
     // PDF document to display
-    var document: PDFDocument
+    @Binding var data: Data
     // For handling annotations
     @Binding var canAnnotate: Bool
     @Binding var annotations: [PDFAnnotation]
     
+    var document: PDFDocument {
+        PDFDocument(data: data)!
+    }
+    
     // Creates the PDFView
     func makeUIView(context: Context) -> PDFView {
         // Set up gesture recognizers
-//        let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
-//        tapGesture.isEnabled = false
+        //        let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        //        tapGesture.isEnabled = false
         
         let pdfView = PDFView()
         pdfView.document = document
         pdfView.autoScales = true
-//        pdfView.isUserInteractionEnabled = true
+        //        pdfView.isUserInteractionEnabled = true
         pdfView.displayMode = .singlePage
         pdfView.displayDirection = .vertical
         pdfView.usePageViewController(true)
-//        pdfView.addGestureRecognizer(tapGesture)
+        //        pdfView.addGestureRecognizer(tapGesture)
         
         disableDoubleTapGestures(in: pdfView)
         
@@ -92,7 +96,7 @@ struct PDFKitAnnotationView: UIViewRepresentable {
         
         // Handle tap gestures
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
-            guard parent.canAnnotate, let pdfView = gesture.view as? PDFView else { return }
+            guard self.parent.canAnnotate, let pdfView = gesture.view as? PDFView else { return }
             
             let location = gesture.location(in: pdfView)
             if let page = pdfView.page(for: location, nearest: true) {
@@ -183,11 +187,38 @@ struct PDFKitAnnotationView: UIViewRepresentable {
         }
         
         // Save the drawn content as a PDF annotation
-        func saveAnnotation(from canvas: PKCanvasView) {}
+        func saveAnnotation(from canvas: PKCanvasView) {
+            //            guard let currentPage = currentPage else { return }
+            let document = PDFDocument(data: self.parent.data)!
+            guard let currentPage = document.page(at: 0) else { return }
+            
+            // Convert the drawing to an image
+            let drawing = canvas.drawing
+            let image = drawing.image(from: canvas.bounds, scale: UIScreen.main.scale)
+            
+            // Create a PDFAnnotation with the image
+            let annotationBounds = canvas.bounds
+            let imageAnnotation = PDFImageAnnotation(bounds: annotationBounds, image: image)
+            
+            // Add the annotation to the current page
+            currentPage.addAnnotation(imageAnnotation)
+            
+            // Optionally, you can save the annotation to the parent's annotations array
+            DispatchQueue.main.async {
+                self.parent.annotations.append(imageAnnotation)
+            }
+            
+            // Update the document's pdfData
+            if let updatedData = document.dataRepresentation() {
+                DispatchQueue.main.async {
+                    self.parent.data = updatedData
+                }
+            }
+        }
         
         // PDFViewDelegate methods
         func pdfViewPageChanged(_ pdfView: PDFView) {
-            guard parent.canAnnotate, let newPage = pdfView.currentPage else { return }
+            guard self.parent.canAnnotate, let newPage = pdfView.currentPage else { return }
             
             // Save current annotations before moving to a new page
             if let canvas = annotationCanvas {
@@ -212,6 +243,26 @@ struct PDFKitAnnotationView: UIViewRepresentable {
             // Save the current drawing to the page
             saveAnnotation(from: canvas)
         }
+    }
+}
+
+// Custom PDFAnnotation subclass for image annotations
+class PDFImageAnnotation: PDFAnnotation {
+    var image: UIImage
+    
+    init(bounds: CGRect, image: UIImage) {
+        self.image = image
+        super.init(bounds: bounds, forType: .stamp, withProperties: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func draw(with box: PDFDisplayBox, in context: CGContext) {
+        // Draw the image within the annotation bounds
+        guard let cgImage = image.cgImage else { return }
+        context.draw(cgImage, in: bounds)
     }
 }
 
