@@ -1,23 +1,26 @@
-// Thanks to Claude and Deepseek
-
 import SwiftUI
 import PDFKit
-import PencilKit
 
 struct ContentView: View {
     @Binding var document: GenkouYoushiDocument
-    
+    @State private var isEditing: Bool = false
+
     var body: some View {
-        ZStack {
-            MyPDFViewX(data: $document.pdfData)
-            MyPKCanvasView()
+        VStack {
+            Button {
+                isEditing = true
+            } label: {
+                Text("Show Toolpicker")
+            }
+            MyPDFViewX(data: $document.pdfData, isEditing: $isEditing)
         }
     }
 }
 
 struct MyPDFViewX: UIViewRepresentable {
     @Binding var data: Data
-    
+    @Binding var isEditing: Bool
+
     func makeUIView(context: Context) -> MyPDFView {
         let document = PDFDocument(data: self.data)!
 
@@ -26,24 +29,10 @@ struct MyPDFViewX: UIViewRepresentable {
 
         return pdfView
     }
-    
-    func updateUIView(_ pdfView: MyPDFView, context: Context) {}
-}
 
-struct MyPKCanvasView: UIViewRepresentable {
-    let toolPicker = MyToolPicker()
-    
-    func makeUIView(context: Context) -> MyCanvasView {
-        let canvasView = MyCanvasView()
-        toolPicker.addObserver(canvasView)
-        
-        toolPicker.setVisible(true, forFirstResponder: canvasView)
-        canvasView.becomeFirstResponder()
-
-        return canvasView
+    func updateUIView(_ pdfView: MyPDFView, context: Context) {
+        pdfView.showToolPicker(isEnabled: isEditing)
     }
-    
-    func updateUIView(_ canvasView: MyCanvasView, context: Context) {}
 }
 
 #Preview {
