@@ -7,7 +7,7 @@ struct GenkouYoushiDocument: FileDocument {
     
     init() {
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792))
-        let pdf = renderer.pdfData { (context) in
+        let pdf = renderer.pdfData { context in
             context.beginPage()
         }
         self.pdfData = pdf

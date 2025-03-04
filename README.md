@@ -5,3 +5,9 @@
 </div>
 
 # GenkouYoushi
+
+## References
+
+- https://youtu.be/qCInoVwcdH8
+- https://developer.apple.com/videos/play/wwdc2022/10089/
+- https://github.com/GuillaumeRossit/MyPencilKitOverPDFApp

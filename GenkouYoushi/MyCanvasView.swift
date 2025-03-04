@@ -7,7 +7,7 @@ class MyCanvasView: UIView {
         view.drawingPolicy = .anyInput
         view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.isUserInteractionEnabled = true
+        view.isUserInteractionEnabled = false
         return view
     }()
 
