@@ -6,6 +6,8 @@
 
 # GenkouYoushi
 
+<p>Genkō yōshi (原稿用紙, "manuscript paper") is a type of Japanese paper used for writing. It is printed with squares, typically 200 or 400 per sheet, each square designed to accommodate a single <a href="https://en.wikipedia.org/wiki/Japanese_character">Japanese character</a> or punctuation mark. Genkō yōshi may be used with any type of writing instrument (<a href="https://en.wikipedia.org/wiki/Pencil">pencil</a>, <a href="https://en.wikipedia.org/wiki/Pen">pen</a> or <a href="https://en.wikipedia.org/wiki/Ink_brush">ink brush</a>), and with or without a <a href="https://en.wikipedia.org/wiki/Shitajiki"><i>shitajiki</i></a> (protective "under-sheet").<sup><a href="https://en.wikipedia.org/wiki/Genk%C5%8D_y%C5%8Dshi">[1]</a></sup></p>
+
 ## References
 
 - https://youtu.be/qCInoVwcdH8
