@@ -25,7 +25,7 @@ struct MyPDFViewX: UIViewRepresentable {
     func makeUIView(context: Context) -> MyPDFView {
         let pdfView = MyPDFView()
         pdfView.loadPDF(data: self.data)
-        context.coordinator.myPDFView = pdfView
+        context.coordinator.pdfView = pdfView
         
         return pdfView
     }
@@ -41,7 +41,7 @@ struct MyPDFViewX: UIViewRepresentable {
         for i in 0...document.pageCount-1 {
             if let page = document.page(at: i),
                let page = page as? MyPDFPage,
-               let canvasView = page.myCanvasView?.canvasView {
+               let canvasView = page.canvasView?.canvasView {
                 // For listen to `canvasViewDrawingDidChange`
                 canvasView.delegate = context.coordinator
             }
@@ -54,15 +54,15 @@ struct MyPDFViewX: UIViewRepresentable {
     
     class Coordinator: NSObject, PKCanvasViewDelegate {
         var parent: MyPDFViewX
-        var myPDFView: MyPDFView?
+        var pdfView: PDFView?
         
         init(_ parent: MyPDFViewX) {
             self.parent = parent
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            if let myPDFView = self.myPDFView,
-               let data = myPDFView.addDrawAnnotations() {
+            if let pdfView = self.pdfView,
+               let data = MyPDFAnnotation.addDrawAnnotations(pdfView: pdfView) {
                 self.parent.data = data
             }
             
