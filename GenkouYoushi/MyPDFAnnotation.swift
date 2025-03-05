@@ -6,7 +6,7 @@ class MyPDFAnnotation: PDFAnnotation {
     // Our custom annotation key.
     // `AAPL:AKExtras` is key used by `File Preview` annotation
     // TODO: Use the same key as the one Apple use so we can edit each other annotation
-    static let drawingAnnotationKey = "AAPL:AKExtras_XYZ"
+    static let drawingAnnotationKey = "AAPL:AKExtras"
     
     static let drawingMediaBoxAnnotationKey: String = "\(drawingAnnotationKey):Height"
     
@@ -61,16 +61,16 @@ extension MyPDFAnnotation {
         return pkDrawing
     }
     
-    static func addDrawAnnotations(pdfView: PDFView) -> Optional<Data> {
-        guard let document = pdfView.document else { return nil }
+    static func addDrawAnnotations(from fromDocument: PDFDocument) -> Optional<Data> {
+        var pageToAnnotationMapping = [PDFPage: PDFAnnotation]()
         
-        for i in 0...document.pageCount-1 {
-            if let page = document.page(at: i),
-               let page = page as? MyPDFPage,
-               let canvasView = page.canvasView?.canvasView {
+        for i in 0...fromDocument.pageCount-1 {
+            if let fromPage = fromDocument.page(at: i),
+               let fromPage = fromPage as? MyPDFPage,
+               let canvasView = fromPage.canvasView?.canvasView {
                 
-                let mediaBoxBounds = page.bounds(for: .mediaBox)
-                let mediaBoxHeight = page.bounds(for: .mediaBox).height
+                let mediaBoxBounds = fromPage.bounds(for: .mediaBox)
+                let mediaBoxHeight = fromPage.bounds(for: .mediaBox).height
                 let properties = [MyPDFAnnotation.drawingMediaBoxAnnotationKey:NSNumber(
                     value: mediaBoxHeight
                 )]
@@ -86,16 +86,24 @@ extension MyPDFAnnotation {
                 // TODO: use same custom data used by Apple's `File Preview` so we can edit each other
                 // let codedData = try! NSKeyedArchiver.archivedData(withRootObject: canvasView.drawing, requiringSecureCoding: true)
                 let codedData = canvasView.drawing.dataRepresentation().base64EncodedString()
-                newAnnotation
-                    .setValue(
-                        codedData,
-                        forAnnotationKey: PDFAnnotationKey(
-                            rawValue: MyPDFAnnotation.drawingAnnotationKey
-                        )
-                    )
+                let annotationKey = PDFAnnotationKey(rawValue: MyPDFAnnotation.drawingAnnotationKey)
+                newAnnotation.setValue(codedData, forAnnotationKey: annotationKey)
                 
                 // Add our annotation to the page
-                page.addAnnotation(newAnnotation)
+                fromPage.addAnnotation(newAnnotation)
+                
+                // Store the annotation related to page to remove it later
+                pageToAnnotationMapping[fromPage] = newAnnotation
+            }
+        }
+        
+        // Delete annotation after data with annotation returned
+        // so only display annotation in pencil canvas on screen
+        // but no on the PDF page
+        // TODO: Look for better implementation if any, feels like this implementation not really good
+        defer {
+            for (page, annotation) in pageToAnnotationMapping {
+                page.removeAnnotation(annotation)
             }
         }
         
@@ -108,7 +116,7 @@ extension MyPDFAnnotation {
         //    // Downsample the image to max high DPI of screen resolution
         //    .optimizeImagesForScreenOption: true
         //]
-        if let resultData = document.dataRepresentation() {
+        if let resultData = fromDocument.dataRepresentation() {
             return resultData
         }
         

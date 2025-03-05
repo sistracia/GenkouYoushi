@@ -17,9 +17,9 @@ extension MyPDFPageOverlay: PDFPageOverlayViewProvider {
         if let drawing = MyPDFAnnotation.initDrawingAnnotations(page: page) {
             canvasView.canvasView.drawing = drawing
         }
-
+        
         page.canvasView = canvasView
         self.pageToViewMapping[page] = canvasView
         return canvasView
-    }    
+    }
 }

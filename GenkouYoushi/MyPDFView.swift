@@ -39,7 +39,27 @@ class MyPDFView: PDFView  {
         self.toolPicker.setVisible(true, forFirstResponder: canvasView.canvasView)
         canvasView.canvasView.isUserInteractionEnabled = true
         canvasView.canvasView.becomeFirstResponder()
-    }    
+    }
+    
+    func setCanvasDelegate(_ delegate: PKCanvasViewDelegate) {
+        guard let document = self.document else { return }
+        
+        for i in 0...document.pageCount-1 {
+            if let page = document.page(at: i),
+               let page = page as? MyPDFPage,
+               let canvasView = page.canvasView?.canvasView {
+                // For listen to `canvasViewDrawingDidChange`
+                canvasView.delegate = delegate
+            }
+        }
+    }
+    
+    func getDataWithAnnotations() -> Optional<Data> {
+        guard let document = self.document
+        else { return nil }
+        
+        return MyPDFAnnotation.addDrawAnnotations(from: document)
+    }
 }
 
 extension MyPDFView: PDFDocumentDelegate {

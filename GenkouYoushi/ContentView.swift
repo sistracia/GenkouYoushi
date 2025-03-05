@@ -31,21 +31,8 @@ struct MyPDFViewX: UIViewRepresentable {
     }
     
     func updateUIView(_ pdfView: MyPDFView, context: Context) {
-        attachCanvasDelegate(document: pdfView.document, context: context)
+        pdfView.setCanvasDelegate(context.coordinator)
         pdfView.showToolPicker(isEnabled: isEditing)
-    }
-    
-    func attachCanvasDelegate(document: PDFDocument?, context: Context) {
-        guard let document = document else { return }
-        
-        for i in 0...document.pageCount-1 {
-            if let page = document.page(at: i),
-               let page = page as? MyPDFPage,
-               let canvasView = page.canvasView?.canvasView {
-                // For listen to `canvasViewDrawingDidChange`
-                canvasView.delegate = context.coordinator
-            }
-        }
     }
     
     func makeCoordinator() -> Coordinator {
@@ -54,18 +41,19 @@ struct MyPDFViewX: UIViewRepresentable {
     
     class Coordinator: NSObject, PKCanvasViewDelegate {
         var parent: MyPDFViewX
-        var pdfView: PDFView?
+        var pdfView: MyPDFView?
         
         init(_ parent: MyPDFViewX) {
             self.parent = parent
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            if let pdfView = self.pdfView,
-               let data = MyPDFAnnotation.addDrawAnnotations(pdfView: pdfView) {
-                self.parent.data = data
+            DispatchQueue.global(qos: .background).sync {
+                if let pdfView = self.pdfView,
+                   let data = pdfView.getDataWithAnnotations() {
+                    self.parent.data = data
+                }
             }
-            
         }
     }
 }
