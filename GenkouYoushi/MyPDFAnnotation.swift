@@ -4,9 +4,9 @@ import PencilKit
 class MyPDFAnnotation: PDFAnnotation {
     
     // Our custom annotation key.
-    // `AAPL:AKExtras` is key used by `File Preview` annotation
+    // `AAPL:AKExtras` is key used by Apple's `File Preview` annotation
     // TODO: Use the same key as the one Apple use so we can edit each other annotation
-    static let drawingAnnotationKey = "AAPL:AKExtras"
+    static let drawingAnnotationKey = "AAPL:AKExtras_XYZ"
     
     static let drawingMediaBoxAnnotationKey: String = "\(drawingAnnotationKey):Height"
     
