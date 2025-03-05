@@ -34,11 +34,20 @@ class MyPDFView: PDFView  {
               let canvasView = overlay.pageToViewMapping[page]
         else { return }
         
+        self.enablePageScroll(enabled: true)
         self.isToolPickerShow = true
         self.toolPicker.addObserver(canvasView.canvasView)
         self.toolPicker.setVisible(true, forFirstResponder: canvasView.canvasView)
         canvasView.canvasView.isUserInteractionEnabled = true
         canvasView.canvasView.becomeFirstResponder()
+    }
+    
+    func enablePageScroll(enabled: Bool) {
+        guard let subView = self.subviews.first,
+              let subView = subView as? UIScrollView
+        else { return }
+        
+        subView.isScrollEnabled = enabled
     }
     
     func setCanvasDelegate(_ delegate: PKCanvasViewDelegate) {
