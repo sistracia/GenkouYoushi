@@ -3,36 +3,46 @@ import PencilKit
 import PDFKit
 
 struct ContentView: View {
-    @Binding var document: GenkouYoushiDocument
+    var document: MyPDFDocument
+    @State private var isOpen: Bool = false
     @State private var isEditing: Bool = false
+    
+    init(url: URL) {
+        self.document = MyPDFDocument(fileURL: url)
+    }
     
     var body: some View {
         VStack {
-            Button {
-                isEditing = true
-            } label: {
-                Text("Start Editing")
+            if (isOpen) {
+                Button {
+                    isEditing = true
+                } label: {
+                    Text("Start Editing")
+                }
+                MyPDFViewX(document: document, isEditing: $isEditing)
             }
-            MyPDFViewX(data: $document.pdfData, isEditing: $isEditing)
+        }.task {
+            isOpen = await self.document.open()
         }
     }
 }
 
 struct MyPDFViewX: UIViewRepresentable {
-    @Binding var data: Data
+    var document: MyPDFDocument
     @Binding var isEditing: Bool
     
     func makeUIView(context: Context) -> MyPDFView {
         let pdfView = MyPDFView()
-        pdfView.loadPDF(data: self.data)
-        context.coordinator.pdfView = pdfView
+        if let document = document.document {
+            pdfView.loadPDF(document: document)
+        }
         
         return pdfView
     }
     
     func updateUIView(_ pdfView: MyPDFView, context: Context) {
         pdfView.setCanvasDelegate(context.coordinator)
-        pdfView.showToolPicker(isEnabled: isEditing)
+        pdfView.showToolPicker(isEnabled: self.isEditing)
     }
     
     func makeCoordinator() -> Coordinator {
@@ -41,7 +51,6 @@ struct MyPDFViewX: UIViewRepresentable {
     
     class Coordinator: NSObject, PKCanvasViewDelegate {
         var parent: MyPDFViewX
-        var pdfView: MyPDFView?
         
         init(_ parent: MyPDFViewX) {
             self.parent = parent
@@ -49,15 +58,10 @@ struct MyPDFViewX: UIViewRepresentable {
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
             DispatchQueue.global(qos: .background).sync {
-                if let pdfView = self.pdfView,
-                   let data = pdfView.getDataWithAnnotations() {
-                    self.parent.data = data
+                self.parent.document.save(to: self.parent.document.fileURL, for: .forOverwriting) { success in
+                    debugPrint(success)
                 }
             }
         }
     }
-}
-
-#Preview {
-    ContentView(document: .constant(GenkouYoushiDocument()))
 }

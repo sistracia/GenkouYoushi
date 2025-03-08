@@ -5,7 +5,6 @@ class MyPDFView: PDFView  {
     private let overlay = MyPDFPageOverlay()
     private let toolPicker = PKToolPicker()
     private var isToolPickerShow = false
-    var data = Data()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -18,11 +17,9 @@ class MyPDFView: PDFView  {
         self.isInMarkupMode = true
     }
     
-    func loadPDF(data: Data) {
-        let document = PDFDocument(data: data)!
+    func loadPDF(document: PDFDocument) {
         document.delegate = self
         self.document = document
-        self.data = data
     }
     
     func showToolPicker(isEnabled: Bool) {
@@ -61,13 +58,6 @@ class MyPDFView: PDFView  {
                 canvasView.delegate = delegate
             }
         }
-    }
-    
-    func getDataWithAnnotations() -> Optional<Data> {
-        guard let document = self.document
-        else { return nil }
-        
-        return MyPDFAnnotation.addDrawAnnotations(from: document)
     }
 }
 

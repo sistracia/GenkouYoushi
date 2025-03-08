@@ -4,7 +4,7 @@ import PencilKit
 class MyPDFAnnotation: PDFAnnotation {
     
     // Our custom annotation key.
-    // `AAPL:AKExtras` is key used by Apple's `File Preview` annotation
+    // `AAPL:AKExtras` is key used by Apple's `Quick Look` annotation
     // TODO: Use the same key as the one Apple use so we can edit each other annotation
     static let drawingAnnotationKey = "AAPL:AKExtras_XYZ"
     
@@ -83,7 +83,7 @@ extension MyPDFAnnotation {
                 )
                 
                 // Add our custom data
-                // TODO: use same custom data used by Apple's `File Preview` so we can edit each other
+                // TODO: use same custom data used by Apple's `Quick Look` so we can edit each other
                 // let codedData = try! NSKeyedArchiver.archivedData(withRootObject: canvasView.drawing, requiringSecureCoding: true)
                 let codedData = canvasView.drawing.dataRepresentation().base64EncodedString()
                 let annotationKey = PDFAnnotationKey(rawValue: MyPDFAnnotation.drawingAnnotationKey)
