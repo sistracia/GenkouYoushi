@@ -6,5 +6,11 @@ struct GenkouYoushiApp: App {
         DocumentGroup(newDocument: GenkouYoushiDocument()) { file in
             ContentView(document: file.$document)
         }
+        DocumentGroupLaunchScene("Genkō Yōshi") {
+            NewDocumentButton("Start Writing")
+        } background: {
+            Image(.launchBackground)
+                .resizable()
+        } backgroundAccessoryView: { _ in }
     }
 }
