@@ -10,7 +10,6 @@
 
 ## References
 
-- [How to Draw on a Pdf using OverlayView with PencilKit in native iOS app PDFKit Swift](https://youtu.be/qCInoVwcdH8)
-- [What's new in PDFKit](https://youtu.be/XJkftcP-zlc)
-- [Evolve your document launch experience](https://youtu.be/VEAHUaqY5bE)
-- [GuillaumeRossit/MyPencilKitOverPDFApp](https://github.com/GuillaumeRossit/MyPencilKitOverPDFApp)
+- https://youtu.be/qCInoVwcdH8
+- https://developer.apple.com/videos/play/wwdc2022/10089/
+- https://github.com/GuillaumeRossit/MyPencilKitOverPDFApp
