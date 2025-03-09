@@ -13,24 +13,27 @@ struct ContentView: View {
                     document.pdfData = initStroke()
                 } label: {
                     Text("Create Paper")
-                }
+                }.buttonStyle(.borderedProminent)
             } else {
-                Button {
-                    isEditing = true
-                } label: {
-                    Text("Start Editing")
-                }
                 MyPDFViewX(data: $document.pdfData, isEditing: $isEditing)
+            }
+        }.toolbar {
+            ToolbarItemGroup {
+                if !document.pdfData.isEmpty {
+                    Toggle(isOn: $isEditing) {
+                        Image(systemName: "pencil.tip.crop.circle")
+                    }
+                }
             }
         }
     }
     
     func initStroke() -> Data {
-        let pageMaxWidth: CGFloat = 612
-        let pageMaxHeight: CGFloat = 792
+        let pageMaxWidth: CGFloat = 1600
+        let pageMaxHeight: CGFloat = 2400
         
         let blockStartHeight: CGFloat = pageMaxHeight -  pageMaxWidth
-        let cellSize: CGFloat = 51
+        let cellSize: CGFloat = 80
         
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageMaxWidth, height: pageMaxHeight))
         let pdf = renderer.pdfData { context in
@@ -63,15 +66,14 @@ struct MyPDFViewX: UIViewRepresentable {
     @Binding var isEditing: Bool
     
     func makeUIView(context: Context) -> MyPDFView {
-        let pdfView = MyPDFView()
-        pdfView.loadPDF(data: self.data)
+        let pdfView = MyPDFView(data: self.data)
         context.coordinator.pdfView = pdfView
         
         return pdfView
     }
     
     func updateUIView(_ pdfView: MyPDFView, context: Context) {
-        pdfView.setCanvasDelegate(context.coordinator)
+        pdfView.setCanvasDelegate(isEditing ? context.coordinator : nil)
         pdfView.showToolPicker(isEnabled: isEditing)
     }
     

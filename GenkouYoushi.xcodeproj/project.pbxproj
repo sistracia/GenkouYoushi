@@ -6,27 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXContainerItemProxy section */
-		EE812EDE2D6C696400A7D8CF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE812EC22D6C696300A7D8CF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EE812EC92D6C696300A7D8CF;
-			remoteInfo = GenkouYoushi;
-		};
-		EE812EE82D6C696400A7D8CF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE812EC22D6C696300A7D8CF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EE812EC92D6C696300A7D8CF;
-			remoteInfo = GenkouYoushi;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Genkou Youshi.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		EE812EDD2D6C696400A7D8CF /* GenkouYoushiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GenkouYoushiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		EE812EE72D6C696400A7D8CF /* GenkouYoushiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GenkouYoushiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -48,34 +29,10 @@
 			path = GenkouYoushi;
 			sourceTree = "<group>";
 		};
-		EE812EE02D6C696400A7D8CF /* GenkouYoushiTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GenkouYoushiTests;
-			sourceTree = "<group>";
-		};
-		EE812EEA2D6C696400A7D8CF /* GenkouYoushiUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GenkouYoushiUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		EE812EC72D6C696300A7D8CF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE812EDA2D6C696400A7D8CF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE812EE42D6C696400A7D8CF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -89,8 +46,6 @@
 			isa = PBXGroup;
 			children = (
 				EE812ECC2D6C696300A7D8CF /* GenkouYoushi */,
-				EE812EE02D6C696400A7D8CF /* GenkouYoushiTests */,
-				EE812EEA2D6C696400A7D8CF /* GenkouYoushiUITests */,
 				EE812ECB2D6C696300A7D8CF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -99,8 +54,6 @@
 			isa = PBXGroup;
 			children = (
 				EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */,
-				EE812EDD2D6C696400A7D8CF /* GenkouYoushiTests.xctest */,
-				EE812EE72D6C696400A7D8CF /* GenkouYoushiUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -130,52 +83,6 @@
 			productReference = EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */;
 			productType = "com.apple.product-type.application";
 		};
-		EE812EDC2D6C696400A7D8CF /* GenkouYoushiTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EE812EF52D6C696400A7D8CF /* Build configuration list for PBXNativeTarget "GenkouYoushiTests" */;
-			buildPhases = (
-				EE812ED92D6C696400A7D8CF /* Sources */,
-				EE812EDA2D6C696400A7D8CF /* Frameworks */,
-				EE812EDB2D6C696400A7D8CF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EE812EDF2D6C696400A7D8CF /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				EE812EE02D6C696400A7D8CF /* GenkouYoushiTests */,
-			);
-			name = GenkouYoushiTests;
-			packageProductDependencies = (
-			);
-			productName = GenkouYoushiTests;
-			productReference = EE812EDD2D6C696400A7D8CF /* GenkouYoushiTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		EE812EE62D6C696400A7D8CF /* GenkouYoushiUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EE812EF82D6C696400A7D8CF /* Build configuration list for PBXNativeTarget "GenkouYoushiUITests" */;
-			buildPhases = (
-				EE812EE32D6C696400A7D8CF /* Sources */,
-				EE812EE42D6C696400A7D8CF /* Frameworks */,
-				EE812EE52D6C696400A7D8CF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				EE812EE92D6C696400A7D8CF /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				EE812EEA2D6C696400A7D8CF /* GenkouYoushiUITests */,
-			);
-			name = GenkouYoushiUITests;
-			packageProductDependencies = (
-			);
-			productName = GenkouYoushiUITests;
-			productReference = EE812EE72D6C696400A7D8CF /* GenkouYoushiUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,14 +95,6 @@
 				TargetAttributes = {
 					EE812EC92D6C696300A7D8CF = {
 						CreatedOnToolsVersion = 16.2;
-					};
-					EE812EDC2D6C696400A7D8CF = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = EE812EC92D6C696300A7D8CF;
-					};
-					EE812EE62D6C696400A7D8CF = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = EE812EC92D6C696300A7D8CF;
 					};
 				};
 			};
@@ -214,28 +113,12 @@
 			projectRoot = "";
 			targets = (
 				EE812EC92D6C696300A7D8CF /* GenkouYoushi */,
-				EE812EDC2D6C696400A7D8CF /* GenkouYoushiTests */,
-				EE812EE62D6C696400A7D8CF /* GenkouYoushiUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EE812EC82D6C696300A7D8CF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE812EDB2D6C696400A7D8CF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE812EE52D6C696400A7D8CF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -252,34 +135,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EE812ED92D6C696400A7D8CF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EE812EE32D6C696400A7D8CF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		EE812EDF2D6C696400A7D8CF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EE812EC92D6C696300A7D8CF /* GenkouYoushi */;
-			targetProxy = EE812EDE2D6C696400A7D8CF /* PBXContainerItemProxy */;
-		};
-		EE812EE92D6C696400A7D8CF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EE812EC92D6C696300A7D8CF /* GenkouYoushi */;
-			targetProxy = EE812EE82D6C696400A7D8CF /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EE812EF12D6C696400A7D8CF /* Debug */ = {
@@ -301,7 +157,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -338,7 +194,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -475,92 +331,6 @@
 			};
 			name = Release;
 		};
-		EE812EF62D6C696400A7D8CF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushiTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GenkouYoushi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GenkouYoushi";
-			};
-			name = Debug;
-		};
-		EE812EF72D6C696400A7D8CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushiTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GenkouYoushi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GenkouYoushi";
-			};
-			name = Release;
-		};
-		EE812EF92D6C696400A7D8CF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushiUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_TARGET_NAME = GenkouYoushi;
-			};
-			name = Debug;
-		};
-		EE812EFA2D6C696400A7D8CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sistracia.GenkouYoushiUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
-				TEST_TARGET_NAME = GenkouYoushi;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -578,24 +348,6 @@
 			buildConfigurations = (
 				EE812EF12D6C696400A7D8CF /* Debug */,
 				EE812EF22D6C696400A7D8CF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EE812EF52D6C696400A7D8CF /* Build configuration list for PBXNativeTarget "GenkouYoushiTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EE812EF62D6C696400A7D8CF /* Debug */,
-				EE812EF72D6C696400A7D8CF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EE812EF82D6C696400A7D8CF /* Build configuration list for PBXNativeTarget "GenkouYoushiUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				EE812EF92D6C696400A7D8CF /* Debug */,
-				EE812EFA2D6C696400A7D8CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

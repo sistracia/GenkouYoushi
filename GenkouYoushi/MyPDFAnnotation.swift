@@ -4,9 +4,7 @@ import PencilKit
 class MyPDFAnnotation: PDFAnnotation {
     
     // Our custom annotation key.
-    // `AAPL:AKExtras` is key used by Apple's `File Preview` annotation
-    // TODO: Use the same key as the one Apple use so we can edit each other annotation
-    static let drawingAnnotationKey = "AAPL:AKExtras_XYZ"
+    static let drawingAnnotationKey = "GY:Extras"
     
     static let drawingMediaBoxAnnotationKey: String = "\(drawingAnnotationKey):Height"
     
@@ -24,8 +22,8 @@ class MyPDFAnnotation: PDFAnnotation {
         
         if let page = page as? MyPDFPage,
            let canvas = page.canvasView {
-            let image = canvas.canvasView.drawing.image(from: canvas.canvasView.drawing.bounds, scale: 1)
-            image.draw(in: canvas.canvasView.drawing.bounds)
+            let image = canvas.drawing.image(from: canvas.drawing.bounds, scale: 1)
+            image.draw(in: canvas.drawing.bounds)
         }
         
         context.restoreGState()
@@ -67,7 +65,7 @@ extension MyPDFAnnotation {
         for i in 0...fromDocument.pageCount-1 {
             if let fromPage = fromDocument.page(at: i),
                let fromPage = fromPage as? MyPDFPage,
-               let canvasView = fromPage.canvasView?.canvasView {
+               let canvasView = fromPage.canvasView {
                 
                 let mediaBoxBounds = fromPage.bounds(for: .mediaBox)
                 let mediaBoxHeight = fromPage.bounds(for: .mediaBox).height
@@ -83,9 +81,8 @@ extension MyPDFAnnotation {
                 )
                 
                 // Add our custom data
-                // TODO: use same custom data used by Apple's `File Preview` so we can edit each other
-                // let codedData = try! NSKeyedArchiver.archivedData(withRootObject: canvasView.drawing, requiringSecureCoding: true)
                 let codedData = canvasView.drawing.dataRepresentation().base64EncodedString()
+                
                 let annotationKey = PDFAnnotationKey(rawValue: MyPDFAnnotation.drawingAnnotationKey)
                 newAnnotation.setValue(codedData, forAnnotationKey: annotationKey)
                 

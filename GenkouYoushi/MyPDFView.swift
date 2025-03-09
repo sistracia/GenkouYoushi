@@ -11,22 +11,21 @@ class MyPDFView: PDFView  {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(data: Data) {
+        super.init(frame: .zero)
+        
+        let document = PDFDocument(data: data)!
+        document.delegate = self
+        
         self.autoScales = true
         self.pageOverlayViewProvider = self.overlay
         self.isInMarkupMode = true
-    }
-    
-    func loadPDF(data: Data) {
-        let document = PDFDocument(data: data)!
-        document.delegate = self
         self.document = document
         self.data = data
     }
     
     func showToolPicker(isEnabled: Bool) {
-        if (self.isToolPickerShow || !isEnabled) {
+        if (self.isToolPickerShow == isEnabled) {
             return
         }
         
@@ -34,12 +33,18 @@ class MyPDFView: PDFView  {
               let canvasView = overlay.pageToViewMapping[page]
         else { return }
         
-        self.enablePageScroll(enabled: true)
-        self.isToolPickerShow = true
-        self.toolPicker.addObserver(canvasView.canvasView)
-        self.toolPicker.setVisible(true, forFirstResponder: canvasView.canvasView)
-        canvasView.canvasView.isUserInteractionEnabled = true
-        canvasView.canvasView.becomeFirstResponder()
+        self.enablePageScroll(enabled: isEnabled)
+        self.isToolPickerShow = isEnabled
+        self.toolPicker.setVisible(isEnabled, forFirstResponder: canvasView)
+        canvasView.isUserInteractionEnabled = isEnabled
+        
+        if (isEnabled) {
+            self.toolPicker.addObserver(canvasView)
+            canvasView.becomeFirstResponder()
+        } else {
+            self.toolPicker.removeObserver(canvasView)
+            canvasView.resignFirstResponder()
+        }
     }
     
     func enablePageScroll(enabled: Bool) {
@@ -50,13 +55,13 @@ class MyPDFView: PDFView  {
         subView.isScrollEnabled = enabled
     }
     
-    func setCanvasDelegate(_ delegate: PKCanvasViewDelegate) {
+    func setCanvasDelegate(_ delegate: PKCanvasViewDelegate?) {
         guard let document = self.document else { return }
         
         for i in 0...document.pageCount-1 {
             if let page = document.page(at: i),
                let page = page as? MyPDFPage,
-               let canvasView = page.canvasView?.canvasView {
+               let canvasView = page.canvasView {
                 // For listen to `canvasViewDrawingDidChange`
                 canvasView.delegate = delegate
             }

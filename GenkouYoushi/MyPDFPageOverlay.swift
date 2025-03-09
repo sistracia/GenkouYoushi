@@ -1,8 +1,9 @@
 import PDFKit
+import PencilKit
 
 class MyPDFPageOverlay: NSObject {
     // To be able to use `MyCanvasView` in `MyPDFView`
-    var pageToViewMapping = [MyPDFPage: MyCanvasView]()
+    var pageToViewMapping = [MyPDFPage: PKCanvasView]()
 }
 
 extension MyPDFPageOverlay: PDFPageOverlayViewProvider {
@@ -13,9 +14,13 @@ extension MyPDFPageOverlay: PDFPageOverlayViewProvider {
             return overlayView
         }
         
-        let canvasView = MyCanvasView(frame: .zero)
+        let canvasView = PKCanvasView(frame: .zero)
+        canvasView.drawingPolicy = .anyInput
+        canvasView.backgroundColor = .clear
+        canvasView.isUserInteractionEnabled = false
+
         if let drawing = MyPDFAnnotation.initDrawingAnnotations(page: page) {
-            canvasView.canvasView.drawing = drawing
+            canvasView.drawing = drawing
         }
         
         page.canvasView = canvasView
