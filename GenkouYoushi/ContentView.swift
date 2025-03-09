@@ -1,40 +1,33 @@
 import SwiftUI
+import PencilKit
+import PDFKit
 
 struct ContentView: View {
     @Binding var document: GenkouYoushiDocument
     @State private var isEditing: Bool = false
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack {
-                if document.pdfData.isEmpty {
-                    Text("Create paper first")
-                } else {
-                    MyPDFView(data: $document.pdfData, isEditing: $isEditing)
+        VStack {
+            if document.pdfData.isEmpty {
+                Button {
+                    document.pdfData = initStroke()
+                } label: {
+                    Text("Create Paper")
                 }
-            }
-            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-            .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if document.pdfData.isEmpty {
-                        Button {
-                            document.pdfData = initStroke(geometry: geometry)
-                        } label: {
-                            Text("Create Paper")
-                        }
-                    } else {
-                        Toggle(isOn: $isEditing) {
-                            Image(systemName: "pencil.tip.crop.circle")
-                        }
-                    }
+            } else {
+                Button {
+                    isEditing = true
+                } label: {
+                    Text("Start Editing")
                 }
+                MyPDFViewX(data: $document.pdfData, isEditing: $isEditing)
             }
         }
     }
     
-    func initStroke(geometry: GeometryProxy) -> Data {
-        let pageMaxWidth: CGFloat = geometry.size.width
-        let pageMaxHeight: CGFloat = geometry.size.height
+    func initStroke() -> Data {
+        let pageMaxWidth: CGFloat = 612
+        let pageMaxHeight: CGFloat = 792
         
         let blockStartHeight: CGFloat = pageMaxHeight -  pageMaxWidth
         let cellSize: CGFloat = 51
@@ -65,8 +58,46 @@ struct ContentView: View {
     
 }
 
-#Preview {
-    @Previewable @State var document = GenkouYoushiDocument()
-    ContentView(document: $document)
+struct MyPDFViewX: UIViewRepresentable {
+    @Binding var data: Data
+    @Binding var isEditing: Bool
+    
+    func makeUIView(context: Context) -> MyPDFView {
+        let pdfView = MyPDFView()
+        pdfView.loadPDF(data: self.data)
+        context.coordinator.pdfView = pdfView
+        
+        return pdfView
+    }
+    
+    func updateUIView(_ pdfView: MyPDFView, context: Context) {
+        pdfView.setCanvasDelegate(context.coordinator)
+        pdfView.showToolPicker(isEnabled: isEditing)
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, PKCanvasViewDelegate {
+        var parent: MyPDFViewX
+        var pdfView: MyPDFView?
+        
+        init(_ parent: MyPDFViewX) {
+            self.parent = parent
+        }
+        
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            DispatchQueue.global(qos: .background).sync {
+                if let pdfView = self.pdfView,
+                   let data = pdfView.getDataWithAnnotations() {
+                    self.parent.data = data
+                }
+            }
+        }
+    }
 }
 
+#Preview {
+    ContentView(document: .constant(GenkouYoushiDocument()))
+}
