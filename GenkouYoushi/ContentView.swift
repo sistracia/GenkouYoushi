@@ -1,21 +1,49 @@
 import SwiftUI
-import PencilKit
-import PDFKit
 
 struct ContentView: View {
     @Binding var document: GenkouYoushiDocument
     @State private var isEditing: Bool = false
     
+    @State private var showInitDialog: Bool = false
+    @State private var showFormSheet: Bool = false
+    
+    @State private var showPhotoPicker: Bool = false
+    @State private var type: UIImagePickerController.SourceType = .photoLibrary
+    @State private var uiImage: UIImage? = nil
+    
+    @State private var croppedImage: UIImage?
+    @State private var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
+    @State private var imageSize: CGSize = .zero
+    
     var body: some View {
         VStack {
             if document.pdfData.isEmpty {
                 Button {
-                    document.pdfData = initStroke()
+                    showInitDialog = true
                 } label: {
                     Text("Create Paper")
-                }.buttonStyle(.borderedProminent)
+                }
+                .buttonStyle(.borderedProminent)
+                .confirmationDialog("Choose how will you initialize your paper?",
+                                    isPresented: $showInitDialog,
+                                    titleVisibility: .hidden
+                ) {
+                    Button {
+                        showInitDialog = false
+                        document.pdfData = initStroke()
+                    } label: {
+                        Text("Empty Paper")
+                    }
+                    
+                    Button {
+                        showInitDialog = false
+                        showPhotoPicker = true
+                    } label: {
+                        Text("With Kanji")
+                    }
+                }
             } else {
-                MyPDFViewX(data: $document.pdfData, isEditing: $isEditing)
+                MyPDFViewPresentable(data: $document.pdfData, isEditing: $isEditing)
             }
         }.toolbar {
             ToolbarItemGroup {
@@ -24,6 +52,13 @@ struct ContentView: View {
                         Image(systemName: "pencil.tip.crop.circle")
                     }
                 }
+            }
+        }
+        .sheet(isPresented: $showFormSheet) {}
+        .fullScreenCover(isPresented: $showPhotoPicker) {
+            MyPhotoPicker(sourceType:type) { image in
+                uiImage = image
+                croppedImage = nil
             }
         }
     }
@@ -58,47 +93,60 @@ struct ContentView: View {
         
         return pdf
     }
-    
 }
 
-struct MyPDFViewX: UIViewRepresentable {
-    @Binding var data: Data
-    @Binding var isEditing: Bool
-    
-    func makeUIView(context: Context) -> MyPDFView {
-        let pdfView = MyPDFView(data: self.data)
-        context.coordinator.pdfView = pdfView
+public extension UIImage {
+    // Ref: https://stackoverflow.com/a/48110726/29628503
+    func croppedImage(renderSize: CGSize, in rect: CGRect) -> UIImage? {
+        guard let cgImage = cgImage else { return nil }
         
-        return pdfView
-    }
-    
-    func updateUIView(_ pdfView: MyPDFView, context: Context) {
-        pdfView.setCanvasDelegate(isEditing ? context.coordinator : nil)
-        pdfView.showToolPicker(isEnabled: isEditing)
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, PKCanvasViewDelegate {
-        var parent: MyPDFViewX
-        var pdfView: MyPDFView?
+        // It somehow rotated
+        let originalWidth = CGFloat(cgImage.height)
+        let originalHeight = CGFloat(cgImage.width)
+        let scaledWidth = renderSize.width
+        let scaledHeight = renderSize.height
         
-        init(_ parent: MyPDFViewX) {
-            self.parent = parent
+        let scaleWidth = originalWidth / scaledWidth
+        let scaleHeight = originalHeight / scaledHeight
+        
+        let scaledX = rect.origin.x
+        let scaledY = rect.origin.y
+        let scaledWidthToTranslate = rect.width
+        let scaledHeightToTranslate = rect.height
+        
+        let originalX = scaledX * scaleWidth
+        let originalY = scaledY * scaleHeight
+        let originalWidthTranslated = scaledWidthToTranslate * scaleWidth
+        let originalHeightTranslated = scaledHeightToTranslate * scaleHeight
+        
+        let convertedRect = CGRect(x: originalX, y: originalY, width: originalWidthTranslated, height: originalHeightTranslated)
+        
+        let rad: (Double) -> CGFloat = { deg in
+            return CGFloat(deg / 180.0 * .pi)
         }
-        
-        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            DispatchQueue.global(qos: .background).sync {
-                if let pdfView = self.pdfView,
-                   let data = pdfView.getDataWithAnnotations() {
-                    self.parent.data = data
-                }
-            }
+        var rectTransform: CGAffineTransform
+        switch imageOrientation {
+        case .left:
+            let rotation = CGAffineTransform(rotationAngle: rad(90))
+            rectTransform = rotation.translatedBy(x: 0, y: -size.height)
+        case .right:
+            let rotation = CGAffineTransform(rotationAngle: rad(-90))
+            rectTransform = rotation.translatedBy(x: -size.width, y: 0)
+        case .down:
+            let rotation = CGAffineTransform(rotationAngle: rad(-180))
+            rectTransform = rotation.translatedBy(x: -size.width, y: -size.height)
+        default:
+            rectTransform = .identity
         }
+        rectTransform = rectTransform.scaledBy(x: scale, y: scale)
+        let transformedRect = convertedRect.applying(rectTransform)
+        if let imageRef = cgImage.cropping(to: transformedRect) {
+            return UIImage(cgImage: imageRef, scale: scale, orientation: imageOrientation)
+        }
+        return nil
     }
 }
+
 
 #Preview {
     ContentView(document: .constant(GenkouYoushiDocument()))
