@@ -46,15 +46,23 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            let newOrigin = CGPoint(
-                                x: min(max(value.location.x, 0), cropRect.maxX - minSize),
-                                y: min(max(value.location.y, 0), cropRect.maxY - minSize)
-                            )
-                            let newSize = CGSize(
-                                width: cropRect.maxX - newOrigin.x,
-                                height: cropRect.maxY - newOrigin.y
-                            )
-                            cropRect = CGRect(origin: newOrigin, size: newSize)
+                            // For unlock aspect ratio
+                            // let newOrigin = CGPoint(
+                            //     x: min(max(value.location.x, 0), cropRect.maxX - minSize),
+                            //     y: min(max(value.location.y, 0), cropRect.maxY - minSize)
+                            // )
+                            // let newSize = CGSize(
+                            //     width: cropRect.maxX - newOrigin.x,
+                            //     height: cropRect.maxY - newOrigin.y
+                            // )
+                            // cropRect = CGRect(origin: newOrigin, size: newSize)
+                            
+                            let newX = min(max(value.location.x, 0), cropRect.maxX - minSize)
+                            let newOrigin = CGPoint(x: newX,
+                                                    y: cropRect.minY - (cropRect.minX - newX))
+                            cropRect = CGRect(origin: newOrigin,
+                                              size: CGSize(width: cropRect.maxX - newOrigin.x,
+                                                           height: cropRect.maxY - newOrigin.y))
                         }
                 )
             
@@ -63,13 +71,19 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
-                            let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
+                            // For unlock aspect ratio
+                            // let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
+                            // let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
                             
-                            cropRect = CGRect(
-                                origin: CGPoint(x: cropRect.minX, y: newY),
-                                size: CGSize(width: newWidth, height: cropRect.maxY - newY)
-                            )
+                            // cropRect = CGRect(
+                            //     origin: CGPoint(x: cropRect.minX, y: newY),
+                            //     size: CGSize(width: newWidth, height: cropRect.maxY - newY)
+                            // )
+                            
+                            let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
+                            let newHeight = cropRect.maxY - newY
+                            cropRect = CGRect(origin: CGPoint(x: cropRect.minX, y: newY),
+                                              size: CGSize(width: newHeight, height: newHeight))
                         }
                 )
             
@@ -78,12 +92,20 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            let newWidth = min(max(cropRect.maxX - value.location.x, minSize), cropRect.maxX)
-                            let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
+                            // For unlock aspect ratio
+                            // let newWidth = min(max(cropRect.maxX - value.location.x, minSize), cropRect.maxX)
+                            // let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
+                            // cropRect = CGRect(
+                            //     origin: CGPoint(x: value.location.x, y: cropRect.minY),
+                            //     size: CGSize(width: newWidth, height: newHeight)
+                            // )
+                            
+                            let newOrigin = CGPoint(x: cropRect.minX - (cropRect.minX - min(max(value.location.x, 0), cropRect.maxX - minSize)),
+                                                    y: cropRect.minY)
+                            let newWidth = cropRect.maxX - newOrigin.x
                             cropRect = CGRect(
-                                origin: CGPoint(x: value.location.x, y: cropRect.minY),
-                                size: CGSize(width: newWidth, height: newHeight)
-                            )
+                                origin: newOrigin,
+                                size: CGSize(width: newWidth, height: newWidth))
                         }
                 )
             
@@ -92,9 +114,14 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
+                            // For unlock aspect ratio
+                            // let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
+                            // let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
+                            // cropRect.size = CGSize(width: newWidth, height: newHeight)
+                            
                             let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
-                            let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
-                            cropRect.size = CGSize(width: newWidth, height: newHeight)
+                            cropRect = CGRect(origin: cropRect.origin,
+                                              size: CGSize(width: newWidth, height: newWidth))
                         }
                 )
         }
