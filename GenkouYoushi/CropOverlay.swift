@@ -7,13 +7,17 @@ struct CropOverlay: View {
     var body: some View {
         ZStack {
             // Semi-transparent overlay covering the entire view
-            Color.black.opacity(0.5)
+            Rectangle()
+                .opacity(0.5)
+                .frame(width: imageSize.width, height: imageSize.height)
                 .mask(
                     Rectangle()
-                        .frame(width: imageSize.width, height: imageSize.height)
                         .overlay(
                             Rectangle()
-                                .frame(width: cropRect.width, height: cropRect.height)
+                                .frame(
+                                    width: cropRect.width,
+                                    height: cropRect.height
+                                )
                                 .position(x: cropRect.midX, y: cropRect.midY)
                                 .blendMode(.destinationOut)
                         )
@@ -108,9 +112,9 @@ struct CropHandle: View {
     }
 }
 
-public extension UIImage {
+extension UIImage {
     // Ref: https://stackoverflow.com/a/48110726/29628503
-    func croppedImage(renderSize: CGSize, in rect: CGRect) -> UIImage? {
+    public func croppedImage(renderSize: CGSize, in rect: CGRect) -> UIImage? {
         guard let cgImage = cgImage else { return nil }
         
         // It somehow rotated
@@ -132,7 +136,11 @@ public extension UIImage {
         let originalWidthTranslated = scaledWidthToTranslate * scaleWidth
         let originalHeightTranslated = scaledHeightToTranslate * scaleHeight
         
-        let convertedRect = CGRect(x: originalX, y: originalY, width: originalWidthTranslated, height: originalHeightTranslated)
+        let convertedRect = CGRect(
+            x: originalX,
+            y: originalY,
+            width: originalWidthTranslated,
+            height: originalHeightTranslated)
         
         let rad: (Double) -> CGFloat = { deg in
             return CGFloat(deg / 180.0 * .pi)
@@ -158,4 +166,18 @@ public extension UIImage {
         }
         return nil
     }
+}
+
+#Preview {
+    @Previewable @State var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
+    
+    Image(systemName: "photo.fill")
+        .resizable()
+        .scaledToFit()
+        .frame(width: 500, height: 500)
+        .overlay(
+            GeometryReader { geometry in
+                CropOverlay(cropRect: $cropRect, imageSize: geometry.size)
+            }
+        )
 }
