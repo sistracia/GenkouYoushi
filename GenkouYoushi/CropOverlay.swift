@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CropOverlay: View {
     @Binding var cropRect: CGRect
+    @Binding var lockRatio: Bool
     var imageSize: CGSize
     
     var body: some View {
@@ -28,7 +29,7 @@ struct CropOverlay: View {
                 .frame(width: cropRect.width, height: cropRect.height)
                 .position(x: cropRect.midX, y: cropRect.midY)
                 .overlay(
-                    CropBorderHandles(cropRect: $cropRect, imageSize: imageSize)
+                    CropBorderHandles(cropRect: $cropRect, lockRatio: $lockRatio, imageSize: imageSize)
                 )
         }
     }
@@ -36,6 +37,7 @@ struct CropOverlay: View {
 
 struct CropBorderHandles: View {
     @Binding var cropRect: CGRect
+    @Binding var lockRatio: Bool
     var imageSize: CGSize
     let minSize: CGFloat = 50
     
@@ -46,23 +48,24 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // For unlock aspect ratio
-                            // let newOrigin = CGPoint(
-                            //     x: min(max(value.location.x, 0), cropRect.maxX - minSize),
-                            //     y: min(max(value.location.y, 0), cropRect.maxY - minSize)
-                            // )
-                            // let newSize = CGSize(
-                            //     width: cropRect.maxX - newOrigin.x,
-                            //     height: cropRect.maxY - newOrigin.y
-                            // )
-                            // cropRect = CGRect(origin: newOrigin, size: newSize)
-                            
-                            let newX = min(max(value.location.x, 0), cropRect.maxX - minSize)
-                            let newOrigin = CGPoint(x: newX,
-                                                    y: cropRect.minY - (cropRect.minX - newX))
-                            cropRect = CGRect(origin: newOrigin,
-                                              size: CGSize(width: cropRect.maxX - newOrigin.x,
-                                                           height: cropRect.maxY - newOrigin.y))
+                            if !lockRatio {
+                                let newOrigin = CGPoint(
+                                    x: min(max(value.location.x, 0), cropRect.maxX - minSize),
+                                    y: min(max(value.location.y, 0), cropRect.maxY - minSize)
+                                )
+                                let newSize = CGSize(
+                                    width: cropRect.maxX - newOrigin.x,
+                                    height: cropRect.maxY - newOrigin.y
+                                )
+                                cropRect = CGRect(origin: newOrigin, size: newSize)
+                            } else {
+                                let newX = min(max(value.location.x, 0), cropRect.maxX - minSize)
+                                let newY = min(cropRect.minY - ((cropRect.minX - newX) * (cropRect.height / cropRect.width)), cropRect.maxY - minSize)
+                                let isReachLimit: Bool = newY <= 0
+                                cropRect = isReachLimit ? cropRect : CGRect(origin: CGPoint(x:  newX, y: newY),
+                                                                            size: CGSize(width: cropRect.maxX - newX,
+                                                                                         height: cropRect.maxY - newY))
+                            }
                         }
                 )
             
@@ -71,19 +74,20 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // For unlock aspect ratio
-                            // let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
-                            // let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
-                            
-                            // cropRect = CGRect(
-                            //     origin: CGPoint(x: cropRect.minX, y: newY),
-                            //     size: CGSize(width: newWidth, height: cropRect.maxY - newY)
-                            // )
-                            
-                            let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
-                            let newHeight = cropRect.maxY - newY
-                            cropRect = CGRect(origin: CGPoint(x: cropRect.minX, y: newY),
-                                              size: CGSize(width: newHeight, height: newHeight))
+                            if !lockRatio {
+                                let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
+                                cropRect = CGRect(
+                                    origin: CGPoint(x: cropRect.minX, y: newY),
+                                    size: CGSize(width: min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX),
+                                                 height: cropRect.maxY - newY)
+                                )
+                            } else {
+                                let newY = min(max(value.location.y, 0), cropRect.maxY - minSize)
+                                let newHeight = cropRect.height + (cropRect.minY - newY)
+                                cropRect = CGRect(origin: CGPoint(x: cropRect.minX, y: newY),
+                                                  size: CGSize(width: (newHeight * (cropRect.width / cropRect.height)),
+                                                               height: newHeight))
+                            }
                         }
                 )
             
@@ -92,20 +96,22 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // For unlock aspect ratio
-                            // let newWidth = min(max(cropRect.maxX - value.location.x, minSize), cropRect.maxX)
-                            // let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
-                            // cropRect = CGRect(
-                            //     origin: CGPoint(x: value.location.x, y: cropRect.minY),
-                            //     size: CGSize(width: newWidth, height: newHeight)
-                            // )
-                            
-                            let newOrigin = CGPoint(x: cropRect.minX - (cropRect.minX - min(max(value.location.x, 0), cropRect.maxX - minSize)),
-                                                    y: cropRect.minY)
-                            let newWidth = cropRect.maxX - newOrigin.x
-                            cropRect = CGRect(
-                                origin: newOrigin,
-                                size: CGSize(width: newWidth, height: newWidth))
+                            if !lockRatio {
+                                cropRect = CGRect(
+                                    origin: CGPoint(x: min(max(value.location.x, 0), cropRect.maxX - minSize),
+                                                    y: cropRect.minY),
+                                    size: CGSize(width: min(max(cropRect.maxX - value.location.x, minSize), cropRect.maxX),
+                                                 height: min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY))
+                                )
+                            } else {
+                                let newX = min(max(value.location.x, 0), cropRect.maxX - minSize)
+                                let maxHeight = imageSize.height - cropRect.minY
+                                let newHeight = (cropRect.width + (cropRect.minX - newX)) / (cropRect.width / cropRect.height)
+                                let isReachLimit: Bool = newHeight >= maxHeight
+                                cropRect = isReachLimit ? cropRect : CGRect(origin: CGPoint(x: newX, y: cropRect.minY),
+                                                                            size: CGSize(width: cropRect.width + (cropRect.minX - newX),
+                                                                                         height: newHeight))
+                            }
                         }
                 )
             
@@ -114,14 +120,17 @@ struct CropBorderHandles: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // For unlock aspect ratio
-                            // let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
-                            // let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
-                            // cropRect.size = CGSize(width: newWidth, height: newHeight)
-                            
-                            let newWidth = min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX)
-                            cropRect = CGRect(origin: cropRect.origin,
-                                              size: CGSize(width: newWidth, height: newWidth))
+                            if !lockRatio {
+                                cropRect.size = CGSize(width: min(max(value.location.x - cropRect.minX, minSize), imageSize.width - cropRect.minX),
+                                                       height: min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY))
+                            } else {
+                                let maxWidth = imageSize.width - cropRect.minX
+                                let newHeight = min(max(value.location.y - cropRect.minY, minSize), imageSize.height - cropRect.minY)
+                                let newWidth = min(max(newHeight * (cropRect.width / cropRect.height), minSize), maxWidth)
+                                let isReachLimit: Bool = newWidth >= maxWidth 
+                                cropRect = isReachLimit ? cropRect : CGRect(origin: cropRect.origin,
+                                                                            size: CGSize(width: newWidth, height: newHeight))
+                            }
                         }
                 )
         }
@@ -196,15 +205,24 @@ extension UIImage {
 }
 
 #Preview {
-    @Previewable @State var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
+    @Previewable @State var cropRect: CGRect = CGRect(x: 50, y: 25, width: 250, height: 150)
+    @Previewable @State var lockRatio = true
     
-    Image(systemName: "photo.fill")
-        .resizable()
-        .scaledToFit()
-        .frame(width: 500, height: 500)
-        .overlay(
-            GeometryReader { geometry in
-                CropOverlay(cropRect: $cropRect, imageSize: geometry.size)
+    VStack {
+        Image(systemName: "photo.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 500, height: 500)
+            .overlay(
+                GeometryReader { geometry in
+                    CropOverlay(cropRect: $cropRect, lockRatio: $lockRatio, imageSize: geometry.size)
+                }
+            )
+        
+        HStack {
+            Toggle(isOn: $lockRatio) {
+                Text("Lock Ratio")
             }
-        )
+        }
+    }
 }

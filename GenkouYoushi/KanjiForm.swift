@@ -12,6 +12,7 @@ struct KanjiForm: View {
     
     @State private var type: UIImagePickerController.SourceType = .photoLibrary
     @State private var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
+    @State private var lockRatio: Bool = true
     @State private var imageSize: CGSize = .zero
     
     var img: Image {
@@ -96,7 +97,7 @@ struct KanjiForm: View {
                         .scaledToFit()
                         .overlay(
                             GeometryReader { geometry in
-                                CropOverlay(cropRect: $cropRect, imageSize: geometry.size)
+                                CropOverlay(cropRect: $cropRect, lockRatio: $lockRatio, imageSize: geometry.size)
                                     .onAppear {
                                         imageSize = geometry.size
                                     }
