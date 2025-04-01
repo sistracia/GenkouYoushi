@@ -48,12 +48,19 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showKanjiForm) {
-            KanjiForm() { description, kanjiImage in }
-                .presentationSizing(.form.fitted(horizontal: false, vertical: true))
+            KanjiForm() { description, kanjiImage in
+                showKanjiForm = false
+                document.pdfData = initStroke(image: kanjiImage, description: description)
+            }
+            .presentationSizing(.form.fitted(horizontal: false, vertical: true))
         }
     }
     
     func initStroke() -> Data {
+        return self.initStroke(image: nil, description: nil)
+    }
+    
+    func initStroke(image: UIImage?, description: String?) -> Data {
         let pageMaxWidth: CGFloat = 1600
         let pageMaxHeight: CGFloat = 2400
         
@@ -79,6 +86,19 @@ struct ContentView: View {
                 path.addLine(to:  CGPoint(x: pageMaxHeight, y: i))
                 path.stroke()
             }
+            
+            // Add some space by decrease the height by 50
+            let imageHeight = blockStartHeight - 50
+            if let image = image {
+                image.draw(in: CGRect(x: 0, y: 0, width: imageHeight, height: imageHeight))
+            }
+            
+            if let description = description as NSString? {
+                description.draw(in: CGRect(x: blockStartHeight, y: 50,
+                                            // Add some space by decrease the width by 100
+                                            width: pageMaxWidth - imageHeight - 100, height: imageHeight),
+                                 withAttributes: [.font: UIFont.systemFont(ofSize: 32)])
+            }
         }
         
         return pdf
@@ -86,5 +106,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(document: .constant(GenkouYoushiDocument()))
+    @Previewable @State var document = GenkouYoushiDocument()
+    ContentView(document: $document)
 }
