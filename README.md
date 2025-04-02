@@ -14,3 +14,7 @@
 - [What's new in PDFKit](https://youtu.be/XJkftcP-zlc)
 - [Evolve your document launch experience](https://youtu.be/VEAHUaqY5bE)
 - [GuillaumeRossit/MyPencilKitOverPDFApp](https://github.com/GuillaumeRossit/MyPencilKitOverPDFApp)
+
+# Attribution
+
+- [sistracia/kanji-api](https://github.com/sistracia/kanji-api)
