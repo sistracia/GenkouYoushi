@@ -1,6 +1,6 @@
 from typing import Union, cast, Annotated
 from .types import Kanji, KanjiIndex
-from fastapi import FastAPI, Path, HTTPException
+from fastapi import FastAPI, Path, Query, HTTPException
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from json.decoder import JSONDecoder, JSONDecodeError
@@ -15,7 +15,7 @@ def element_tostring(element: ElementTree.Element) -> str:
 def previous_element_string(elements: list[ElementTree.Element]) -> str:
     return reduce(lambda value, element: f"{value}\t{element_tostring(element)}\n", elements, "")
 
-def svg_to_progressive_strings(svg_string: str, stroke_path: str) -> list[str]:
+def svg_to_progressive_strings(svg_string: str, stroke_path: str, with_number: bool) -> list[str]:
     xml_version_declaration = search(r'<\?xml.*?\?>', svg_string).group(0)
     doctype_declaration = search(r'<!DOCTYPE.*?\]>', svg_string, DOTALL).group(0)
     svg_tag = search(r'<svg xmlns="http://www.w3.org/2000/svg".*?>', svg_string).group(0)
@@ -34,14 +34,17 @@ def svg_to_progressive_strings(svg_string: str, stroke_path: str) -> list[str]:
 
     stroke_orders: list[str] = []
     for i in range(0, len(path_elements)):
+        path_strings = f"{previous_element_string(path_elements[:i])}\t{element_tostring(path_elements[i])}"
+        text_strings = f"{previous_element_string(text_elements[:i])}\t{element_tostring(text_elements[i])}" if with_number else ""
+
         stroke_order = f"""{xml_version_declaration}
 {doctype_declaration}
 {svg_tag}
 {stroke_paths_tag}
-{previous_element_string(path_elements[:i])}\t{element_tostring(path_elements[i])}
+{path_strings}
 </g>
 {stroke_numbers_tag}
-{previous_element_string(text_elements[:i])}\t{element_tostring(text_elements[i])}
+{text_strings}
 </g>
 </svg>
 """
@@ -82,7 +85,8 @@ def get_kvg(kanji: str) -> Union[str, None]:
 app = FastAPI(docs_url="/docs")
 
 @app.get("/kanji/{kanji}")
-def get_kanji_index(kanji: Annotated[str, Path(title="The kanji to get")]) -> Kanji:
+def get_kanji_index(kanji: Annotated[str, Path(title="The kanji to get.")],
+                    with_number: Annotated[bool, Query(description="Show the stroke order number.")] = True) -> Kanji:
     try:
         kvg_index = get_kvg_index()
 
@@ -95,7 +99,7 @@ def get_kanji_index(kanji: Annotated[str, Path(title="The kanji to get")]) -> Ka
         if kvg_file is None:
             raise HTTPException(status_code=404, detail="Kanji strokes not found.")
 
-        stroke_orders = [b64encode(stroke_order.encode(encoding="utf-8", errors="strict")) for stroke_order in svg_to_progressive_strings(kvg_file, kvg.replace(".svg", ""))]
+        stroke_orders = [b64encode(stroke_order.encode(encoding="utf-8", errors="strict")) for stroke_order in svg_to_progressive_strings(kvg_file, kvg.replace(".svg", ""), with_number)]
 
         kanji: Kanji = {"kanji": kanji, "stroke_orders": stroke_orders}
         return kanji
