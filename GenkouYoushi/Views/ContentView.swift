@@ -38,7 +38,8 @@ struct ContentView: View {
             } else {
                 MyPDFViewPresentable(data: $document.pdfData, isEditing: $isEditing)
             }
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItemGroup {
                 if !document.pdfData.isEmpty {
                     Toggle(isOn: $isEditing) {
@@ -48,11 +49,13 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showKanjiForm) {
-            KanjiForm() { description, kanjiImage in
-                showKanjiForm = false
-                document.pdfData = initStroke(image: kanjiImage, description: description)
-            }
-            .presentationSizing(.form.fitted(horizontal: false, vertical: true))
+            KanjiForm()
+                .onKanjiSelected({ kanjiText in })
+                .onSave({ description, kanjiImage in
+                    showKanjiForm = false
+                    document.pdfData = initStroke(image: kanjiImage, description: description)
+                })
+                .presentationSizing(.form.fitted(horizontal: false, vertical: true))
         }
     }
     
@@ -107,5 +110,7 @@ struct ContentView: View {
 
 #Preview {
     @Previewable @State var document = GenkouYoushiDocument()
-    ContentView(document: $document)
+    @Previewable @State var modelData = ModelData()
+    
+    ContentView(document: $document).environment(modelData)
 }

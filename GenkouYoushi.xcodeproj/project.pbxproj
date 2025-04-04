@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EECE1EF82D9F9481002646B6 /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = EECE1EF72D9F9481002646B6 /* SVGKit */; };
+		EECE1EFA2D9F9481002646B6 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EECE1EF92D9F9481002646B6 /* SVGKitSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Genkou Youshi.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EECE1EFA2D9F9481002646B6 /* SVGKitSwift in Frameworks */,
+				EECE1EF82D9F9481002646B6 /* SVGKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = GenkouYoushi;
 			packageProductDependencies = (
+				EECE1EF72D9F9481002646B6 /* SVGKit */,
+				EECE1EF92D9F9481002646B6 /* SVGKitSwift */,
 			);
 			productName = GenkouYoushi;
 			productReference = EE812ECA2D6C696300A7D8CF /* Genkou Youshi.app */;
@@ -107,6 +116,9 @@
 			);
 			mainGroup = EE812EC12D6C696300A7D8CF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EECE1EF62D9F9481002646B6 /* XCRemoteSwiftPackageReference "SVGKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EE812ECB2D6C696300A7D8CF /* Products */;
 			projectDirPath = "";
@@ -357,6 +369,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EECE1EF62D9F9481002646B6 /* XCRemoteSwiftPackageReference "SVGKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SVGKit/SVGKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EECE1EF72D9F9481002646B6 /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EECE1EF62D9F9481002646B6 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		EECE1EF92D9F9481002646B6 /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EECE1EF62D9F9481002646B6 /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EE812EC22D6C696300A7D8CF /* Project object */;
 }

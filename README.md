@@ -18,3 +18,4 @@
 # Attribution
 
 - [sistracia/kanji-api](https://github.com/sistracia/kanji-api)
+- [SVGKit/SVGKit](https://github.com/SVGKit/SVGKit)

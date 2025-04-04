@@ -40,7 +40,7 @@ extension Kanji: Decodable {
         }
         
         guard let kanji = rawKanji,
-              rawStrokeOrders.isEmpty
+              !rawStrokeOrders.isEmpty
         else {
             throw KanjiAPIClientError.missingData
         }
@@ -71,7 +71,7 @@ actor KanjiAPIClient {
             throw KanjiAPIClientError.invalidURL
         }
         
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
         let data = try await httpClient.httpData(for: request)
         return data
     }
