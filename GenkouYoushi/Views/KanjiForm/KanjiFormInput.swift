@@ -151,7 +151,6 @@ struct KanjiFormInput: View {
         
         // Process the recognized strings.
         let kanjiText = recognizedStrings.joined(separator: " ")
-        debugPrint(kanjiText)
         
         Task {
             if let kanji = await modelData.getKanji(kanji: kanjiText),
