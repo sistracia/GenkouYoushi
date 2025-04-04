@@ -17,7 +17,6 @@ struct KanjiFormInput: View {
     @State private var type: UIImagePickerController.SourceType = .photoLibrary
     @State private var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
     @State private var lockRatio: Bool = true
-    @State private var imageSize: CGSize = .zero
     
     var img: Image {
         if let kanjiImage = kanjiImage {
@@ -97,17 +96,8 @@ struct KanjiFormInput: View {
             if let tmpKanjiImage = tmpKanjiImage {
                 ServerStateOverlay {
                     VStack(alignment: .center, spacing: 10) {
-                        Image(uiImage: tmpKanjiImage)
-                            .resizable()
-                            .scaledToFit()
-                            .overlay(
-                                GeometryReader { geometry in
-                                    CropOverlay(cropRect: $cropRect, lockRatio: $lockRatio, imageSize: geometry.size)
-                                        .onAppear {
-                                            imageSize = geometry.size
-                                        }
-                                }
-                            )
+                        CropOverlay(image: tmpKanjiImage, cropRect: $cropRect, lockRatio: $lockRatio)
+                        
                         HStack(spacing: 10) {
                             Button {
                                 showPhotoPicker = true
@@ -117,7 +107,7 @@ struct KanjiFormInput: View {
                             }
                             
                             Button {
-                                if let croppedTmpKanjiImage = tmpKanjiImage.croppedImage(renderSize: imageSize, in: cropRect) {
+                                if let croppedTmpKanjiImage = tmpKanjiImage.croppedImage(in: cropRect) {
                                     self.extractText(image: croppedTmpKanjiImage)
                                 }
                             } label: {
