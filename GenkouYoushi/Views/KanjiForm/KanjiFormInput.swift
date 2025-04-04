@@ -16,7 +16,8 @@ struct KanjiFormInput: View {
     
     @State private var type: UIImagePickerController.SourceType = .photoLibrary
     @State private var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
-    @State private var lockRatio: Bool = true
+    @State private var lockAspectRatio: Bool = true
+    @State private var aspectRatio: CGFloat = 1.0 // Default 1:1
     
     var img: Image {
         if let kanjiImage = kanjiImage {
@@ -90,13 +91,14 @@ struct KanjiFormInput: View {
             MyPhotoPicker(sourceType:type) { image in
                 tmpKanjiImage = image
                 showPhotoPicker = false
+                cropRect = getImageRect(image: image)
             }
         }
         .fullScreenCover(isPresented: isTmpKanjiImagePicked){
             if let tmpKanjiImage = tmpKanjiImage {
                 ServerStateOverlay {
                     VStack(alignment: .center, spacing: 10) {
-                        CropOverlay(image: tmpKanjiImage, cropRect: $cropRect, lockRatio: $lockRatio)
+                        CropOverlay(image: tmpKanjiImage, cropRect: $cropRect, lockAspectRatio: $lockAspectRatio, aspectRatio: $aspectRatio)
                         
                         HStack(spacing: 10) {
                             Button {
@@ -107,7 +109,7 @@ struct KanjiFormInput: View {
                             }
                             
                             Button {
-                                if let croppedTmpKanjiImage = tmpKanjiImage.croppedImage(in: cropRect) {
+                                if let croppedTmpKanjiImage = tmpKanjiImage.cropImage(cropRect: cropRect) {
                                     self.extractText(image: croppedTmpKanjiImage)
                                 }
                             } label: {
@@ -118,6 +120,20 @@ struct KanjiFormInput: View {
                 }
             }
         }
+    }
+    
+    private func getImageRect(image: UIImage) -> CGRect {
+        // Initialize crop rectangle to cover most of the image
+        let imageSize = image.size
+        let initialSize = CGSize(
+            width: 250,
+            height: 250
+        )
+        let initialOrigin = CGPoint(
+            x: (imageSize.width - initialSize.width) / 2,
+            y: (imageSize.height - initialSize.height) / 2
+        )
+        return CGRect(origin: initialOrigin, size: initialSize)
     }
     
     func extractText(image: UIImage) {
