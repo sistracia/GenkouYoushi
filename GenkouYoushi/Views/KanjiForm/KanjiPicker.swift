@@ -3,12 +3,10 @@ import SVGKit
 
 struct KanjiPicker: View {
     @Environment(ModelData.self) var modelData
-    
-    @Binding var isInputKanji: Bool
-    @Binding var kanjiImage: UIImage?
-    let onPick: () -> Void
-    
     @State private var kanjiText: String = ""
+    
+    private var cancel: (() -> Void)?
+    private var pick: ((UIImage, Kanji) -> Void)?
     
     var body: some View {
         ServerStateOverlay {
@@ -21,8 +19,8 @@ struct KanjiPicker: View {
             } action: {
                 HStack(spacing: 10) {
                     Button {
-                        withAnimation {
-                            isInputKanji = false
+                        if let cancel = self.cancel {
+                            cancel()
                         }
                     } label: {
                         Text("Cancel")
@@ -32,8 +30,9 @@ struct KanjiPicker: View {
                             if let kanji = await modelData.getKanji(kanji: kanjiText),
                                let lastStrokeOrder =  kanji.strokeOrders.last,
                                let kanjiImage = UIImage.imageFromBase64SVG(lastStrokeOrder) {
-                                self.kanjiImage = kanjiImage
-                                self.isInputKanji = false
+                                if let pick = self.pick {
+                                    pick(kanjiImage, kanji)
+                                }
                             }
                         }
                     } label: {
@@ -43,5 +42,18 @@ struct KanjiPicker: View {
                 }
             }
         }
+    }
+    
+    func onBack(_ action: @escaping () -> Void) -> Self {
+        var copy = self
+        copy.cancel = action
+        return copy
+    }
+    
+    
+    func onPick(_ action: @escaping (UIImage, Kanji) -> Void) -> Self {
+        var copy = self
+        copy.pick = action
+        return copy
     }
 }

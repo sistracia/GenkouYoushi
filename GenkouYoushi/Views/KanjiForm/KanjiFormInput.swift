@@ -3,12 +3,10 @@ import Vision
 
 struct KanjiFormInput: View {
     @Environment(ModelData.self) var modelData
-    
-    @Binding var isInputKanji: Bool
-    @Binding var description: String
     @Binding var kanjiImage: UIImage?
-    let onSave: () -> Void
     
+    @State private var description: String = ""
+    @State private var kanji: Kanji? = nil
     @State private var tmpKanjiImage: UIImage? = nil
     
     @State private var showImageTypeDialog: Bool = false
@@ -18,6 +16,13 @@ struct KanjiFormInput: View {
     @State private var cropRect: CGRect = CGRect(x: 100, y: 100, width: 200, height: 200)
     @State private var lockAspectRatio: Bool = true
     @State private var aspectRatio: CGFloat = 1.0 // Default 1:1
+    
+    private var importKanji: (() -> Void)?
+    private var save: ((String, Kanji?) -> Void)?
+    
+    init(kanjiImage: Binding<UIImage?>) {
+        self._kanjiImage = kanjiImage
+    }
     
     var img: Image {
         if let kanjiImage = kanjiImage {
@@ -53,8 +58,8 @@ struct KanjiFormInput: View {
                                     titleVisibility: .hidden
                 ) {
                     Button {
-                        withAnimation {
-                            isInputKanji = true
+                        if let importKanji = self.importKanji {
+                            importKanji()
                         }
                     } label: {
                         Text("Import")
@@ -81,7 +86,9 @@ struct KanjiFormInput: View {
                 .padding(10)
         } action: {
             Button {
-                onSave()
+                if let save = self.save {
+                    save(description, kanji)
+                }
             } label: {
                 Text("Save")
             }
@@ -123,6 +130,18 @@ struct KanjiFormInput: View {
         }
     }
     
+    func onImportKanji(_ action: @escaping () -> Void) -> Self {
+        var copy = self
+        copy.importKanji = action
+        return copy
+    }
+    
+    func onSave(_ action: @escaping (String, Kanji?) -> Void) -> Self {
+        var copy = self
+        copy.save = action
+        return copy
+    }
+    
     private func getImageRect(image: UIImage) -> CGRect {
         // Default to center square that's 80% of the smaller dimension
         let minDimension = min(image.size.width, image.size.height) * 0.8
@@ -131,7 +150,7 @@ struct KanjiFormInput: View {
         return CGRect(x: centerX, y: centerY, width: minDimension, height: minDimension)
     }
     
-    func extractText(image: UIImage) {
+    private func extractText(image: UIImage) {
         guard let cgImage = image.cgImage else { return }
         
         // Create a new image-request handler.
@@ -149,7 +168,7 @@ struct KanjiFormInput: View {
         }
     }
     
-    func recognizeTextHandler(request: VNRequest, error: Error?) {
+    private func recognizeTextHandler(request: VNRequest, error: Error?) {
         guard let observations =
                 request.results as? [VNRecognizedTextObservation] else {
             return
@@ -167,6 +186,7 @@ struct KanjiFormInput: View {
             if let kanji = await modelData.getKanji(kanji: kanjiText),
                let lastStrokeOrder =  kanji.strokeOrders.last,
                let kanjiImage = UIImage.imageFromBase64SVG(lastStrokeOrder) {
+                self.kanji = kanji
                 self.kanjiImage = kanjiImage
                 self.tmpKanjiImage = nil
             }

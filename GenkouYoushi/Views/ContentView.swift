@@ -51,19 +51,19 @@ struct ContentView: View {
         .sheet(isPresented: $showKanjiForm) {
             KanjiForm()
                 .onKanjiSelected({ kanjiText in })
-                .onSave({ description, kanjiImage in
+                .onSave({ description, kanjiImage, kanjiOrders in
                     showKanjiForm = false
-                    document.pdfData = initStroke(image: kanjiImage, description: description)
+                    document.pdfData = initStroke(image: kanjiImage, description: description, kanjiOrders: kanjiOrders.reversed())
                 })
                 .presentationSizing(.form.fitted(horizontal: false, vertical: true))
         }
     }
     
     func initStroke() -> Data {
-        return self.initStroke(image: nil, description: nil)
+        return self.initStroke(image: nil, description: nil, kanjiOrders: [])
     }
     
-    func initStroke(image: UIImage?, description: String?) -> Data {
+    func initStroke(image: UIImage?, description: String?, kanjiOrders: [UIImage?]) -> Data {
         let pageMaxWidth: CGFloat = 1600
         let pageMaxHeight: CGFloat = 2400
         
@@ -79,28 +79,45 @@ struct ContentView: View {
             // Draw vertical lines
             for i in stride(from: cellSize, to: pageMaxWidth, by: cellSize) {
                 path.move(to: CGPoint(x: i, y: blockStartHeight))
-                path.addLine(to:  CGPoint(x: i, y: pageMaxHeight))
+                path.addLine(to: CGPoint(x: i, y: pageMaxHeight))
                 path.stroke()
             }
             
             // Draw horizontal lines
             for i in stride(from: blockStartHeight, to: pageMaxHeight, by: cellSize) {
                 path.move(to: CGPoint(x: 0, y: i))
-                path.addLine(to:  CGPoint(x: pageMaxHeight, y: i))
+                path.addLine(to: CGPoint(x: pageMaxHeight, y: i))
                 path.stroke()
             }
             
-            // Add some space by decrease the height by 50
-            let imageHeight = blockStartHeight - 50
             if let image = image {
-                image.draw(in: CGRect(x: 0, y: 0, width: imageHeight, height: imageHeight))
+                let minDimension = blockStartHeight * 0.8
+                let centerX = (blockStartHeight - minDimension) / 2
+                let centerY = (blockStartHeight - minDimension) / 2
+                
+                image.draw(in: CGRect(x: centerX, y: centerY, width: minDimension, height: minDimension))
             }
             
             if let description = description as NSString? {
-                description.draw(in: CGRect(x: blockStartHeight, y: 50,
-                                            // Add some space by decrease the width by 100
-                                            width: pageMaxWidth - imageHeight - 100, height: imageHeight),
+                let minDimension = blockStartHeight * 0.9
+                let centerY = (blockStartHeight - minDimension) / 2
+                
+                description.draw(in: CGRect(x: blockStartHeight, y: centerY, width: minDimension, height: minDimension),
                                  withAttributes: [.font: UIFont.systemFont(ofSize: 32)])
+            }
+            
+            let verticalLines: CGFloat = pageMaxWidth / cellSize
+            let horizontalLines: CGFloat = (pageMaxHeight - blockStartHeight) / cellSize
+            
+            for i in 0..<kanjiOrders.count {
+                guard let kanjiOrderImage = kanjiOrders[i]else {
+                    continue
+                }
+                
+                kanjiOrderImage.draw(in: CGRect(x: cellSize * CGFloat(i).truncatingRemainder(dividingBy: verticalLines),
+                                                y: blockStartHeight + (cellSize * (CGFloat(i) / horizontalLines).rounded(.towardZero)),
+                                                width: cellSize,
+                                                height: cellSize))
             }
         }
         
