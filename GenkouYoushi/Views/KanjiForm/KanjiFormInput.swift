@@ -89,9 +89,10 @@ struct KanjiFormInput: View {
         }
         .fullScreenCover(isPresented: $showPhotoPicker) {
             MyPhotoPicker(sourceType:type) { image in
-                tmpKanjiImage = image
+                let fixedImageOrientation = image.fixOrientation()
+                tmpKanjiImage = fixedImageOrientation
                 showPhotoPicker = false
-                cropRect = getImageRect(image: image)
+                cropRect = getImageRect(image: fixedImageOrientation)
             }
         }
         .fullScreenCover(isPresented: isTmpKanjiImagePicked){
@@ -123,17 +124,11 @@ struct KanjiFormInput: View {
     }
     
     private func getImageRect(image: UIImage) -> CGRect {
-        // Initialize crop rectangle to cover most of the image
-        let imageSize = image.size
-        let initialSize = CGSize(
-            width: 250,
-            height: 250
-        )
-        let initialOrigin = CGPoint(
-            x: (imageSize.width - initialSize.width) / 2,
-            y: (imageSize.height - initialSize.height) / 2
-        )
-        return CGRect(origin: initialOrigin, size: initialSize)
+        // Default to center square that's 80% of the smaller dimension
+        let minDimension = min(image.size.width, image.size.height) * 0.8
+        let centerX = (image.size.width - minDimension) / 2
+        let centerY = (image.size.height - minDimension) / 2
+        return CGRect(x: centerX, y: centerY, width: minDimension, height: minDimension)
     }
     
     func extractText(image: UIImage) {

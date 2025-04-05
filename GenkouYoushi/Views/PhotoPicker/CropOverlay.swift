@@ -10,6 +10,8 @@ struct CropOverlay: View {
     @State private var isDragging = false
     @State private var lastDragPosition: CGPoint?
     
+    @State private var position = CGPoint(x: 100, y: 100)
+    
     // Minimum allowed crop size
     private let minCropSize: CGFloat = 50
     
@@ -37,28 +39,28 @@ struct CropOverlay: View {
                 
                 // Semi-transparent overlay
                 Rectangle()
-                    .fill(Color.black.opacity(0.5))
                     .mask(
-                        ZStack {
-                            Rectangle()
-                            
-                            // Cutout for crop area
-                            Rectangle()
-                                .frame(
-                                    width: cropRect.width * displayScale,
-                                    height: cropRect.height * displayScale
-                                )
-                                .position(
-                                    x: cropRect.midX * displayScale + geometry.size.width / 2 - image.size.width * displayScale / 2,
-                                    y: cropRect.midY * displayScale + geometry.size.height / 2 - image.size.height * displayScale / 2
-                                )
-                                .blendMode(.destinationOut)
-                        }
+                        Rectangle()
+                            .fill(Color.black.opacity(0.5))
+                            .overlay(
+                                // Cutout for crop area
+                                Rectangle()
+                                    .frame(
+                                        width: cropRect.width * displayScale,
+                                        height: cropRect.height * displayScale
+                                    )
+                                    .position(
+                                        x: cropRect.midX * displayScale + geometry.size.width / 2 - image.size.width * displayScale / 2,
+                                        y: cropRect.midY * displayScale + geometry.size.height / 2 - image.size.height * displayScale / 2
+                                    )
+                                    .blendMode(.destinationOut)
+                            )
                     )
                 
                 // Crop rectangle outline
                 Rectangle()
                     .strokeBorder(Color.white, lineWidth: 2)
+                    .contentShape(Rectangle())
                     .frame(
                         width: cropRect.width * displayScale,
                         height: cropRect.height * displayScale
@@ -230,19 +232,26 @@ extension UIImage {
     // Function to actually crop the image
     func cropImage(cropRect: CGRect) -> UIImage? {
         guard let cgImage = cgImage else { return nil }
+        guard let croppedCGImage = cgImage.cropping(to: cropRect) else { return nil }
+        return UIImage(cgImage: croppedCGImage, scale: scale, orientation: .up)
+    }
+    
+    func fixOrientation() -> UIImage {
+        // If the orientation is already up, no need to fix
+        if self.imageOrientation == .up {
+            return self
+        }
         
-        // Scale the crop rect to match the image's actual size
-        let scaledCropRect = CGRect(
-            x: cropRect.origin.x,
-            y: cropRect.origin.y,
-            width: cropRect.width,
-            height: cropRect.height
-        )
+        // Create a CGContext to draw the rotated image
+        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        defer { UIGraphicsEndImageContext() }
         
-        guard let croppedCGImage = cgImage.cropping(to: scaledCropRect) else { return nil }
-        let croppedImage = UIImage(cgImage: croppedCGImage, scale: scale, orientation: imageOrientation)
+        // Draw the image in the correct orientation
+        let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
+        self.draw(in: rect)
         
-        return croppedImage
+        // Get the normalized image
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
 }
 
