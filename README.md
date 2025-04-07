@@ -19,7 +19,7 @@ See [demo below](#demo).
 
 ## Attribution
 
-- [sistracia/kanji-api](https://github.com/sistracia/kanji-api)
+- [kanjivg.tagaini.net](https://kanjivg.tagaini.net) / [KanjiVG/kanjivg](https://github.com/KanjiVG/kanjivg)
 - [SVGKit/SVGKit](https://github.com/SVGKit/SVGKit)
 
 ## Demo
