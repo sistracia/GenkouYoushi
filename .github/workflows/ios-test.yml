@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - "**"
+    paths:
+      - '.github/workflows/ios-test.yml'
+      - 'ios/**'
+
+defaults:
+  run:
+    working-directory: ./ios
 
 jobs:
   test:
