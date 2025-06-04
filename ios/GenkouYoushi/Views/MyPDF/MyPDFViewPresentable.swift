@@ -31,11 +31,14 @@ struct MyPDFViewPresentable: UIViewRepresentable {
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            DispatchQueue.global(qos: .background).sync {
-                if let pdfView = self.pdfView,
-                   let data = pdfView.getDataWithAnnotations() {
-                    self.parent.data = data
-                }
+            DispatchQueue.main.async {
+                guard let pdfView = self.pdfView
+                else { return }
+                
+                guard let newData = pdfView.getDataWithAnnotations()
+                else { return }
+                
+                self.parent.data = newData
             }
         }
     }

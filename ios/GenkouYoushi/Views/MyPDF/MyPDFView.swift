@@ -3,8 +3,6 @@ import PencilKit
 
 class MyPDFView: PDFView  {
     private let overlay = MyPDFPageOverlay()
-    private let toolPicker = PKToolPicker()
-    private var isToolPickerShow = false
     var data = Data()
     
     required init?(coder: NSCoder) {
@@ -21,30 +19,18 @@ class MyPDFView: PDFView  {
         self.pageOverlayViewProvider = self.overlay
         self.isInMarkupMode = true
         self.document = document
+        self.becomeFirstResponder()
         self.data = data
     }
     
     func showToolPicker(isEnabled: Bool) {
-        if (self.isToolPickerShow == isEnabled) {
-            return
-        }
-        
-        guard let page = currentPage as? MyPDFPage,
-              let canvasView = overlay.pageToViewMapping[page]
-        else { return }
-        
         self.enablePageScroll(enabled: isEnabled)
-        self.isToolPickerShow = isEnabled
-        self.toolPicker.setVisible(isEnabled, forFirstResponder: canvasView)
-        canvasView.isUserInteractionEnabled = isEnabled
         
-        if (isEnabled) {
-            self.toolPicker.addObserver(canvasView)
-            canvasView.becomeFirstResponder()
-        } else {
-            self.toolPicker.removeObserver(canvasView)
-            canvasView.resignFirstResponder()
+        for (_, canvas) in (self.overlay.pageToViewMapping)  {
+            canvas.isUserInteractionEnabled = isEnabled
         }
+        
+        self.overlay.toolPicker.setVisible(isEnabled, forFirstResponder: self)
     }
     
     func enablePageScroll(enabled: Bool) {
@@ -59,12 +45,17 @@ class MyPDFView: PDFView  {
         guard let document = self.document else { return }
         
         for i in 0...document.pageCount-1 {
-            if let page = document.page(at: i),
-               let page = page as? MyPDFPage,
-               let canvasView = page.canvasView {
-                // For listen to `canvasViewDrawingDidChange`
-                canvasView.delegate = delegate
-            }
+            guard let page = document.page(at: i)
+            else { return }
+            
+            guard let page = page as? MyPDFPage
+            else { return }
+            
+            guard let canvasView = page.canvasView
+            else { return }
+            
+            // For listen to `canvasViewDrawingDidChange`
+            canvasView.delegate = delegate
         }
     }
     

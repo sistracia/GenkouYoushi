@@ -2,6 +2,7 @@ import PDFKit
 import PencilKit
 
 class MyPDFPageOverlay: NSObject {
+    let toolPicker = PKToolPicker()
     // To be able to use `MyCanvasView` in `MyPDFView`
     var pageToViewMapping = [MyPDFPage: PKCanvasView]()
 }
@@ -19,6 +20,8 @@ extension MyPDFPageOverlay: PDFPageOverlayViewProvider {
         canvasView.backgroundColor = .clear
         canvasView.isUserInteractionEnabled = false
 
+        toolPicker.addObserver(canvasView)
+        
         if let drawing = MyPDFAnnotation.initDrawingAnnotations(page: page) {
             canvasView.drawing = drawing
         }
@@ -26,5 +29,17 @@ extension MyPDFPageOverlay: PDFPageOverlayViewProvider {
         page.canvasView = canvasView
         self.pageToViewMapping[page] = canvasView
         return canvasView
+    }
+    
+    func pdfView(_ view: PDFView, willRemove overlayView: UIView, for page: PDFPage) {
+        guard let overlayView = overlayView as? PKCanvasView
+        else { return }
+        
+        guard let page = page as? MyPDFPage
+        else { return }
+        
+        toolPicker.removeObserver(overlayView)
+        page.canvasView = overlayView
+        pageToViewMapping.removeValue(forKey: page)
     }
 }
