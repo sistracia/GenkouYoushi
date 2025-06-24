@@ -31,7 +31,7 @@ struct MyPDFViewPresentable: UIViewRepresentable {
         }
         
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 guard let pdfView = self.pdfView
                 else { return }
                 
